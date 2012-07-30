@@ -245,15 +245,16 @@ EOT;
 
         foreach( $assets as $asset ) {
             // What type of file? CSS, JS?
-            $ext = pathinfo($asset);
-            if ( !isset($ext['extension']) ) {
+            $ext = File::extension($asset);
+
+            if( !$ext ) {
                 // Hmm - not sure what to do.
                 echo "Warning: Could not determine file type. Please specify an extension.";
                 continue;
             }
 
             // Set the path, dependent upon the file type.
-            switch ($ext['extension']) {
+            switch ($ext) {
                 case 'js':
                     $path = self::$js_dir . $asset;
                     break;
