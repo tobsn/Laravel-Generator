@@ -214,8 +214,8 @@ class Generate_Test extends PHPUnit_Framework_TestCase
 		));
 
 		$this->assertFileExists(self::$view . 'user/index.blade.php');
-		$this->assertFileExists(self::$view . 'user/show.blade.php');
 		$this->assertFileNotExists(self::$view . 'user/restful.blade.php');
+		$this->assertFileNotExists(self::$view . 'user/show.blade.php');
 
 		$contents = File::get(path('app') . 'controllers/users.php');
 

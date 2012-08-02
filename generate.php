@@ -437,20 +437,14 @@ EOT;
 
         $this->controller($args);
 
-        // Let's see if they added "restful" anywhere in the args.
-        if( $this->is_restful($args) ) {
-            // Remove that restful item from the array. No longer needed.
-            $args = array_diff($args, array('restful'));
-
-            // also - remove any index:post <-- and then any duplicates, like index, index
-            $args = array_unique(array_map(function($arg) {
-                list($method, $verb) = explode(':', $arg);
-                return $method;
-            }, $args));
-        }
-
         // Singular for everything else
         $resource_name = Str::singular(array_shift($args));
+
+        if ( $this->is_restful($args) ) {
+            // Remove that restful item from the array. No longer needed.
+            $args = array_diff($args, array('restful'));
+            $args = $this->determine_views($args);
+        }
 
         // Let's take any supplied view names, and set them
         // in the resource name's directory.
@@ -670,6 +664,24 @@ EOT;
     {
         $restful_pos = array_search('restful', $args);
         return $restful_pos !== false;
+    }
+
+
+    protected function determine_views($args)
+    {
+        // Separate index:post, and remove any non-GET views.
+        array_walk($args, function(&$arg, $index) use(&$args) {
+            // method, optional verb
+            $bits = explode(':', $arg);
+            $arg = $bits[0];
+
+            if ( isset($bits[1]) && $bits[1] !== 'get' ) {
+                // then we shouldn't create a view for it.
+                unset($args[$index]);
+            }
+        });
+
+        return $args;
     }
 }
 
