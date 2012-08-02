@@ -204,6 +204,27 @@ class Generate_Test extends PHPUnit_Framework_TestCase
 	}
 
 
+	public function test_compensates_for_restful_declaration_when_creating_resources()
+	{
+		$this->generate->resource(array(
+			'user',
+			'index',
+			'show:post',
+			'restful'
+		));
+
+		$this->assertFileExists(self::$view . 'user/index.blade.php');
+		$this->assertFileExists(self::$view . 'user/show.blade.php');
+		$this->assertFileNotExists(self::$view . 'user/restful.blade.php');
+
+		$contents = File::get(path('app') . 'controllers/users.php');
+
+		$this->assertContains('public function get_index', (string)$contents);
+		$this->assertContains('public function post_show', (string)$contents);
+
+	}
+
+
 	// @group assets
 	public function test_can_create_assets()
 	{

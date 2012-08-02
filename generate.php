@@ -100,9 +100,8 @@ EOT;
 
         $content = '';
         // Let's see if they added "restful" anywhere in the args.
-        $restful_pos = array_search('restful', $args);
-        if ( $restful_pos !== false ) {
-            array_splice($args, $restful_pos, 1);
+        if ( $restful = $this->is_restful($args) ) {
+            $args = array_diff($args, array('restful'));
             $content .= 'public $restful = true;';
         }
 
@@ -113,7 +112,8 @@ EOT;
                 list($method, $verb) = explode(':', $method);
                 $content .= Content::func("{$verb}_{$method}");
             } else {
-                $action = $restful_pos ? 'get' : 'action';
+                $action = $restful ? 'get' : 'action';
+
                 $content .= Content::func("{$action}_{$method}");
             }
         }
@@ -434,7 +434,20 @@ EOT;
         if ( !preg_match('/admin|config/', $args[0]) ) {
             $args[0] = Str::plural($args[0]);
         }
+
         $this->controller($args);
+
+        // Let's see if they added "restful" anywhere in the args.
+        if( $this->is_restful($args) ) {
+            // Remove that restful item from the array. No longer needed.
+            $args = array_diff($args, array('restful'));
+
+            // also - remove any index:post <-- and then any duplicates, like index, index
+            $args = array_unique(array_map(function($arg) {
+                list($method, $verb) = explode(':', $arg);
+                return $method;
+            }, $args));
+        }
 
         // Singular for everything else
         $resource_name = Str::singular(array_shift($args));
@@ -650,6 +663,13 @@ EOT;
     public function add_after($where, $to_add, $content)
     {
         return str_replace($where, $where . $to_add, $content);
+    }
+
+
+    protected function is_restful($args)
+    {
+        $restful_pos = array_search('restful', $args);
+        return $restful_pos !== false;
     }
 }
 
