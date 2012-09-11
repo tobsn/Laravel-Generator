@@ -362,6 +362,7 @@ EOT;
         // Create the field rules for for the schema
         if ( $table_event === 'create' ) {
             $fields = $this->add_columns($args);
+            $fields .= $this->set_column('increments', 'id') . ';';
             $fields .= $this->set_column('timestamps', null) . ';';
         }
 
