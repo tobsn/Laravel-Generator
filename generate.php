@@ -26,15 +26,479 @@ class Generate_Task
     public static $css_dir = 'css/';
     public static $sass_dir  = 'css/sass/';
     public static $less_dir  = 'css/less/';
+    public static $css_vendors_dir = 'css/vendors/';
 
     public static $js_dir  = 'js/';
     public static $coffee_dir  = 'js/coffee/';
+    public static $js_vendors_dir  = 'js/vendors/';
 
     /*
      * The content for the generate file
      */
     public static $content;
 
+    /*
+     * List of supported libraries
+     */
+
+    public static $libraries = array(
+        'ace' => array(
+            'http://cdnjs.cloudflare.com/ajax/libs/ace/0.2.0/ace.js',
+            'http://ace.ajax.org/' ),
+        'alloy-ui' => array(
+            'http://cdnjs.cloudflare.com/ajax/libs/alloy-ui/1.0.1/aui-min.js',
+            'https://github.com/liferay/alloy-ui' ),
+        'angular' => array(
+            'http://cdnjs.cloudflare.com/ajax/libs/angular.js/1.0.1/angular.min.js',
+            'http://angularjs.org' ),
+        'augment' => array(
+            'http://cdnjs.cloudflare.com/ajax/libs/augment.js/0.4.0/augment.min.js',
+            'http://augmentjs.com' ),
+        'backbone-localstorage' => array(
+            'http://cdnjs.cloudflare.com/ajax/libs/backbone-localstorage.js/1.0/backbone.localStorage-min.js',
+            'https://github.com/jeromegn/Backbone.localStorage' ),
+        'backbone' => array(
+            'http://cdnjs.cloudflare.com/ajax/libs/backbone.js/0.9.2/backbone-min.js',
+            'http://documentcloud.github.com/backbone/' ),
+        'backbone.modelbinder' => array(
+            'http://cdnjs.cloudflare.com/ajax/libs/backbone.modelbinder/0.1.5/Backbone.ModelBinder.min.js',
+            'https://github.com/theironcook/Backbone.ModelBinder#prerequisites' ),
+        'benchmark' => array(
+            'http://cdnjs.cloudflare.com/ajax/libs/benchmark/0.3.0/benchmark.min.js',
+            'http://benchmarkjs.com/' ),
+        'camanjs' => array(
+            'http://cdnjs.cloudflare.com/ajax/libs/camanjs/3.2/caman.full.min.js',
+            'http://camanjs.com/' ),
+        'chosen' => array(
+            'http://cdnjs.cloudflare.com/ajax/libs/chosen/0.9.8/chosen.jquery.min.js',
+            'http://harvesthq.github.com/chosen' ),
+        'chrome-frame' => array(
+            'http://cdnjs.cloudflare.com/ajax/libs/chrome-frame/1.0.2/CFInstall.min.js',
+            'http://code.google.com/chrome/chromeframe/' ),
+        'coffee-script' => array(
+            'http://cdnjs.cloudflare.com/ajax/libs/coffee-script/1.3.3/coffee-script.min.js',
+            'http://jashkenas.github.com/coffee-script/' ),
+        'crafty' => array(
+            'http://cdnjs.cloudflare.com/ajax/libs/crafty/0.4.9/crafty-min.js',
+            'http://craftyjs.com/' ),
+        'css3finalize' => array(
+            'http://cdnjs.cloudflare.com/ajax/libs/css3finalize/3.1/jquery.css3finalize.min.js',
+            'https://github.com/codler/jQuery-Css3-Finalize' ),
+        'css3pie' => array(
+            'http://cdnjs.cloudflare.com/ajax/libs/css3pie/1.0.0/PIE.js',
+            'http://css3pie.com' ),
+        'cufon' => array(
+            'http://cdnjs.cloudflare.com/ajax/libs/cufon/1.09i/cufon-yui.js',
+            'http://cufon.shoqolate.com/' ),
+        'd3' => array(
+            'http://cdnjs.cloudflare.com/ajax/libs/d3/2.10.0/d3.v2.min.js',
+            'http://mbostock.github.com/d3/' ),
+        'datatables' => array(
+            'http://cdnjs.cloudflare.com/ajax/libs/datatables/1.9.3/jquery.dataTables.min.js',
+            'http://datatables.net' ),
+        'datatables-fixedheader' => array(
+            'http://cdnjs.cloudflare.com/ajax/libs/datatables-fixedheader/2.0.6/FixedHeader.min.js',
+            'http://datatables.net/extras/fixedheader/' ),
+        'datejs' => array(
+            'http://cdnjs.cloudflare.com/ajax/libs/datejs/1.0/date.min.js',
+            'http://www.datejs.com' ),
+        'davis' => array(
+            'http://cdnjs.cloudflare.com/ajax/libs/davis.js/0.7.0/davis.min.js',
+            'http://davisjs.com' ),
+        'dd_belatedpng' => array(
+            'http://cdnjs.cloudflare.com/ajax/libs/dd_belatedpng/0.0.8/dd_belatedpng.min.js',
+            'http://www.dillerdesign.com/experiment/DD_belatedPNG/' ),
+        'documentup' => array(
+            'http://cdnjs.cloudflare.com/ajax/libs/documentup/0.1.1/documentup.min.js',
+            'http://documentup.com' ),
+        'dojo' => array(
+            'http://cdnjs.cloudflare.com/ajax/libs/dojo/1.7.2/dojo.js',
+            'http://dojotoolkit.org/' ),
+        'dropbox' => array(
+            'http://cdnjs.cloudflare.com/ajax/libs/dropbox.js/0.6.1/dropbox.min.js',
+            'https://dropbox.com/developers' ),
+        'dygraph' => array(
+            'http://cdnjs.cloudflare.com/ajax/libs/dygraph/1.2/dygraph-combined.js',
+            'http://dygraphs.com/' ),
+        'embedly-jquery' => array(
+            'http://cdnjs.cloudflare.com/ajax/libs/embedly-jquery/2.2.0/jquery.embedly.min.js',
+            'https://github.com/embedly/embedly-jquery' ),
+        'ember' => array(
+            'http://cdnjs.cloudflare.com/ajax/libs/ember.js/1.0.pre/ember-1.0.pre.min.js',
+            'http://emberjs.com/' ),
+        'es5-shim' => array(
+            'http://cdnjs.cloudflare.com/ajax/libs/es5-shim/1.2.4/es5-shim.min.js',
+            'https://github.com/kriskowal/es5-shim' ),
+        'ext-core' => array(
+            'http://cdnjs.cloudflare.com/ajax/libs/ext-core/3.1.0/ext-core.js',
+            'http://www.sencha.com/products/extjs/' ),
+        'fancybox' => array(
+            'http://cdnjs.cloudflare.com/ajax/libs/fancybox/2.0.6/jquery.fancybox.pack.js',
+            'http://fancyapps.com/fancybox/' ),
+        'firebug-lite' => array(
+            'http://cdnjs.cloudflare.com/ajax/libs/firebug-lite/1.4.0/firebug-lite.js',
+            'https://getfirebug.com/firebuglite/' ),
+        'flexie' => array(
+            'http://cdnjs.cloudflare.com/ajax/libs/flexie/1.0.0/flexie.min.js',
+            'http://flexiejs.com/' ),
+        'flot' => array(
+            'http://cdnjs.cloudflare.com/ajax/libs/flot/0.7/jquery.flot.min.js',
+            'http://code.google.com/p/flot/' ),
+        'galleria' => array(
+            'http://cdnjs.cloudflare.com/ajax/libs/galleria/1.2.7/galleria.min.js',
+            'http://galleria.aino.se' ),
+        'graphael' => array(
+            'http://cdnjs.cloudflare.com/ajax/libs/graphael/0.5.0/g.raphael-min.js',
+            'http://g.raphaeljs.com/' ),
+        'handlebars' => array(
+            'http://cdnjs.cloudflare.com/ajax/libs/handlebars.js/1.0.0.beta6/handlebars.min.js',
+            'http://www.handlebarsjs.com' ),
+        'hashgrid' => array(
+            'http://cdnjs.cloudflare.com/ajax/libs/hashgrid/6/hashgrid.js',
+            'http://hashgrid.com/' ),
+        'headjs' => array(
+            'http://cdnjs.cloudflare.com/ajax/libs/headjs/0.96/head.min.js',
+            'http://headjs.com/' ),
+        'highcharts' => array(
+            'http://cdnjs.cloudflare.com/ajax/libs/highcharts/2.3.1/highcharts.js',
+            'http://highcharts.com/' ),
+        'history' => array(
+            'http://cdnjs.cloudflare.com/ajax/libs/history.js/1.7.1/native.history.js',
+            'https://github.com/balupton/History.js/' ),
+        'hogan' => array(
+            'http://cdnjs.cloudflare.com/ajax/libs/hogan.js/2.0.0/hogan.js',
+            'http://twitter.github.com/hogan.js/' ),
+        'html5shiv' => array(
+            'http://cdnjs.cloudflare.com/ajax/libs/html5shiv/3.6/html5shiv.min.js',
+            'https://github.com/aFarkas/html5shiv' ),
+        'ICanHaz' => array(
+            'http://cdnjs.cloudflare.com/ajax/libs/ICanHaz.js/0.10/ICanHaz.min.js',
+            'http://icanhazjs.com' ),
+        'javascript-state-machine' => array(
+            'http://cdnjs.cloudflare.com/ajax/libs/javascript-state-machine/2.0.0/state-machine.min.js',
+            'https://github.com/jakesgordon/javascript-state-machine' ),
+        'jo' => array(
+            'http://cdnjs.cloudflare.com/ajax/libs/jo/0.4.1/jo.min.js',
+            'http://joapp.com' ),
+        'jquery' => array(
+            'http://cdnjs.cloudflare.com/ajax/libs/jquery/1.8.1/jquery.min.js',
+            'http://jquery.com/' ),
+        'jquery-cookie' => array(
+            'http://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.2/jquery.cookie.js',
+            'https://github.com/carhartl/jquery-cookie' ),
+        'jquery-easing' => array(
+            'http://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.3/jquery.easing.min.js',
+            'http://gsgd.co.uk/sandbox/jquery/easing/' ),
+        'jquery-gamequery' => array(
+            'http://cdnjs.cloudflare.com/ajax/libs/jquery-gamequery/0.6.2/jquery.gamequery.min.js',
+            'http://gamequeryjs.com' ),
+        'jquery-hashchange' => array(
+            'http://cdnjs.cloudflare.com/ajax/libs/jquery-hashchange/v1.3/jquery.ba-hashchange.min.js',
+            'http://benalman.com/projects/jquery-hashchange-plugin/' ),
+        'jquery-history' => array(
+            'http://cdnjs.cloudflare.com/ajax/libs/jquery-history/1.9/jquery.history.js',
+            'https://github.com/tkyk/jquery-history-plugin' ),
+        'jquery-infinitescroll' => array(
+            'http://cdnjs.cloudflare.com/ajax/libs/jquery-infinitescroll/2.0b2.110713/jquery.infinitescroll.min.js',
+            'http://www.infinite-scroll.com/infinite-scroll-jquery-plugin/' ),
+        'jquery-mockjax' => array(
+            'http://cdnjs.cloudflare.com/ajax/libs/jquery-mockjax/1.5.1/jquery.mockjax.js',
+            'http://code.appendto.com/plugins/jquery-mockjax/' ),
+        'jquery-mousewheel' => array(
+            'http://cdnjs.cloudflare.com/ajax/libs/jquery-mousewheel/3.0.6/jquery.mousewheel.min.js',
+            'http://brandonaaron.net/code/mousewheel/docs' ),
+        'jquery-nivoslider' => array(
+            'http://cdnjs.cloudflare.com/ajax/libs/jquery-nivoslider/3.1/jquery.nivo.slider.pack.js',
+            'http://nivo.dev7studios.com' ),
+        'jquery-scrollTo' => array(
+            'http://cdnjs.cloudflare.com/ajax/libs/jquery-scrollTo/1.4.3/jquery.scrollTo.min.js',
+            'http://flesler.blogspot.com/2007/10/jqueryscrollto.html' ),
+        'jquery-textext' => array(
+            'http://cdnjs.cloudflare.com/ajax/libs/jquery-textext/1.3.0/jquery.textext.min.js',
+            'http://textextjs.com/' ),
+        'jquery-throttle-debounce' => array(
+            'http://cdnjs.cloudflare.com/ajax/libs/jquery-throttle-debounce/1.1/jquery.ba-throttle-debounce.min.js',
+            'https://github.com/cowboy/jquery-throttle-debounce' ),
+        'jquery-timeago' => array(
+            'http://cdnjs.cloudflare.com/ajax/libs/jquery-timeago/0.9.3/jquery.timeago.js',
+            'http://timeago.yarp.com/' ),
+        'jquery-tools' => array(
+            'http://cdnjs.cloudflare.com/ajax/libs/jquery-tools/1.2.6/jquery.tools.min.js',
+            'http://flowplayer.org/tools/index.html' ),
+        'jquery-validate' => array(
+            'http://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.9.0/jquery.validate.min.js',
+            'http://bassistance.de/jquery-plugins/jquery-plugin-validation//' ),
+        'jquery.colorbox' => array(
+            'http://cdnjs.cloudflare.com/ajax/libs/jquery.colorbox/1.3.20.1/jquery.colorbox-min.js',
+            'http://www.jacklmoore.com/colorbox' ),
+        'jquery.cycle' => array(
+            'http://cdnjs.cloudflare.com/ajax/libs/jquery.cycle/2.99/jquery.cycle.all.min.js',
+            'http://jquery.malsup.com/cycle/' ),
+        'jquery.formalize' => array(
+            'http://cdnjs.cloudflare.com/ajax/libs/jquery.formalize/1.2/jquery.formalize.min.js',
+            'http://formalize.me/' ),
+        'jquery.nanoscroller' => array(
+            'http://cdnjs.cloudflare.com/ajax/libs/jquery.nanoscroller/0.6.8/jquery.nanoscroller.min.js',
+            'http://jamesflorentino.github.com/nanoScrollerJS/' ),
+        'jquery.SPServices' => array(
+            'http://cdnjs.cloudflare.com/ajax/libs/jquery.SPServices/0.7.1a/jquery.SPServices-0.7.1a.min.js',
+            'http://spservices.codeplex.com/' ),
+        'jquery.transit' => array(
+            'http://cdnjs.cloudflare.com/ajax/libs/jquery.transit/0.1.3/jquery.transit.min.js',
+            'http://ricostacruz.com/jquery.transit/' ),
+        'jqueryui' => array(
+            'http://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.8.23/jquery-ui.min.js',
+            'http://jqueryui.com/' ),
+        'jqueryui-touch-punch' => array(
+            'http://cdnjs.cloudflare.com/ajax/libs/jqueryui-touch-punch/0.2.2/jquery.ui.touch-punch.min.js',
+            'http://touchpunch.furf.com/' ),
+        'js-signals' => array(
+            'http://cdnjs.cloudflare.com/ajax/libs/js-signals/0.6.1/js-signals.min.js',
+            'http://millermedeiros.github.com/js-signals/' ),
+        'jScrollPane' => array(
+            'http://cdnjs.cloudflare.com/ajax/libs/jScrollPane/2.0.0beta12/jquery.jscrollpane.min.js',
+            'http://jscrollpane.kelvinluck.com' ),
+        'json2' => array(
+            'http://cdnjs.cloudflare.com/ajax/libs/json2/20110223/json2.js',
+            'https://github.com/douglascrockford/JSON-js' ),
+        'json3' => array(
+            'http://cdnjs.cloudflare.com/ajax/libs/json3/3.2.3/json3.min.js',
+            'http://bestiejs.github.com/json3' ),
+        'jStorage' => array(
+            'http://cdnjs.cloudflare.com/ajax/libs/jStorage/0.1.6.1/jstorage.min.js',
+            'http://jstorage.info/' ),
+        'jsxgraph' => array(
+            'http://cdnjs.cloudflare.com/ajax/libs/jsxgraph/0.94/jsxgraphcore.js',
+            'http://jsxgraph.org/' ),
+        'kerning' => array(
+            'http://cdnjs.cloudflare.com/ajax/libs/kerning.js/0.2/kerning.min.js',
+            'http://kerningjs.com/' ),
+        'knockout' => array(
+            'http://cdnjs.cloudflare.com/ajax/libs/knockout/2.1.0/knockout-min.js',
+            'http://knockoutjs.com/' ),
+        'knockout.mapping' => array(
+            'http://cdnjs.cloudflare.com/ajax/libs/knockout.mapping/2.3.2/knockout.mapping.js',
+            'http://knockoutjs.com/documentation/plugins-mapping.html' ),
+        'labjs' => array(
+            'http://cdnjs.cloudflare.com/ajax/libs/labjs/2.0.3/LAB.min.js',
+            'http://labjs.com/' ),
+        'less' => array(
+            'http://cdnjs.cloudflare.com/ajax/libs/less.js/1.3.0/less-1.3.0.min.js',
+            'http://lesscss.org/' ),
+        'lodash' => array(
+            'http://cdnjs.cloudflare.com/ajax/libs/lodash.js/0.7.0/lodash.min.js',
+            'http://lodash.com' ),
+        'masonry' => array(
+            'http://cdnjs.cloudflare.com/ajax/libs/masonry/2.1.04/jquery.masonry.min.js',
+            'http://masonry.desandro.com/' ),
+        'mobilizejs' => array(
+            'http://cdnjs.cloudflare.com/ajax/libs/mobilizejs/0.9/mobilize.min.js',
+            'http://mobilizejs.com' ),
+        'modernizr' => array(
+            'http://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js',
+            'http://www.modernizr.com/' ),
+        'moment' => array(
+            'http://cdnjs.cloudflare.com/ajax/libs/moment.js/1.7.0/moment.min.js',
+            'http://momentjs.com/' ),
+        'mootools' => array(
+            'http://cdnjs.cloudflare.com/ajax/libs/mootools/1.3.2/mootools-yui-compressed.js',
+            'http://mootools.net/' ),
+        'morris' => array(
+            'http://cdnjs.cloudflare.com/ajax/libs/morris.js/0.2.9/morris.min.js',
+            'http://oesmith.github.com/morris.js/' ),
+        'mustache' => array(
+            'http://cdnjs.cloudflare.com/ajax/libs/mustache.js/0.5.0-dev/mustache.min.js',
+            'https://github.com/janl/mustache.js' ),
+        'ninjaui' => array(
+            'http://cdnjs.cloudflare.com/ajax/libs/ninjaui/1.0.1/jquery.ninjaui.min.js',
+            'http://ninjaui.com/' ),
+        'noisy' => array(
+            'http://cdnjs.cloudflare.com/ajax/libs/noisy/1.1/jquery.noisy.min.js',
+            'http://rappdaniel.com/noisy/' ),
+        'ocanvas' => array(
+            'http://cdnjs.cloudflare.com/ajax/libs/ocanvas/2.2.1/ocanvas.min.js',
+            'http://ocanvas.org/' ),
+        'openajax-hub' => array(
+            'http://cdnjs.cloudflare.com/ajax/libs/openajax-hub/2.0.7/OpenAjaxUnmanagedHub.min.js',
+            'http://www.openajax.org/member/wiki/OpenAjax_Hub_1.0_Specification' ),
+        'openlayers' => array(
+            'http://cdnjs.cloudflare.com/ajax/libs/openlayers/2.11/OpenLayers.js',
+            'http://openlayers.org/' ),
+        'pagedown' => array(
+            'http://cdnjs.cloudflare.com/ajax/libs/pagedown/1.0/Markdown.Converter.js',
+            'http://code.google.com/p/pagedown/wiki/PageDown' ),
+        'paper' => array(
+            'http://cdnjs.cloudflare.com/ajax/libs/paper.js/0.22/paper.js',
+            'http://paperjs.org/' ),
+        'path' => array(
+            'http://cdnjs.cloudflare.com/ajax/libs/path.js/0.8.4/path.min.js',
+            'https://github.com/mtrpcic/pathjs' ),
+        'pie' => array(
+            'http://cdnjs.cloudflare.com/ajax/libs/pie/1.0beta5/PIE.js',
+            'http://css3pie.com/' ),
+        'platform' => array(
+            'http://cdnjs.cloudflare.com/ajax/libs/platform/0.4.0/platform.min.js',
+            'https://github.com/bestiejs/platform.js' ),
+        'prefixfree' => array(
+            'http://cdnjs.cloudflare.com/ajax/libs/prefixfree/1.0.6/prefixfree.min.js',
+            'http://leaverou.github.com/prefixfree/' ),
+        'prettify' => array(
+            'http://cdnjs.cloudflare.com/ajax/libs/prettify/188.0.0/prettify.js',
+            'http://code.google.com/p/google-code-prettify/' ),
+        'processing' => array(
+            'http://cdnjs.cloudflare.com/ajax/libs/processing.js/1.3.6/processing-api.min.js',
+            'http://processingjs.org' ),
+        'prototype' => array(
+            'http://cdnjs.cloudflare.com/ajax/libs/prototype/1.7.1.0/prototype.js',
+            'http://prototypejs.org/' ),
+        'psd' => array(
+            'http://cdnjs.cloudflare.com/ajax/libs/psd.js/0.4.5/psd.min.js',
+            'http://meltingice.github.com/psd.js/' ),
+        'pubnub' => array(
+            'http://cdnjs.cloudflare.com/ajax/libs/pubnub/3.1.2/pubnub.min.js',
+            'http://www.pubnub.com/' ),
+        'punycode' => array(
+            'http://cdnjs.cloudflare.com/ajax/libs/punycode/1.0.0/punycode.min.js',
+            'http://mths.be/punycode' ),
+        'raphael' => array(
+            'http://cdnjs.cloudflare.com/ajax/libs/raphael/2.1.0/raphael-min.js',
+            'http://raphaeljs.com/' ),
+        'raven' => array(
+            'http://cdnjs.cloudflare.com/ajax/libs/raven.js/0.5.3/raven.min.js',
+            'https://github.com/lincolnloop/raven-js' ),
+        'remoteStorage' => array(
+            'http://cdnjs.cloudflare.com/ajax/libs/remoteStorage/0.6.9/remoteStorage.min.js',
+            'http://remotestoragejs.com' ),
+        'require' => array(
+            'http://cdnjs.cloudflare.com/ajax/libs/require.js/0.26.0/require.min.js',
+            'https://github.com/jrburke/require-jquery' ),
+        'require' => array(
+            'http://cdnjs.cloudflare.com/ajax/libs/require.js/2.0.6/require.min.js',
+            'http://requirejs.org/' ),
+        'respond' => array(
+            'http://cdnjs.cloudflare.com/ajax/libs/respond.js/1.1.0/respond.min.js',
+            'https://github.com/scottjehl/Respond' ),
+        'ResponsiveSlides' => array(
+            'http://cdnjs.cloudflare.com/ajax/libs/ResponsiveSlides.js/1.32/responsiveslides.min.js',
+            'http://responsive-slides.viljamis.com/' ),
+        'retina' => array(
+            'http://cdnjs.cloudflare.com/ajax/libs/retina.js/1.0.1/retina.js',
+            'http://retinajs.com/' ),
+        'rickshaw' => array(
+            'http://cdnjs.cloudflare.com/ajax/libs/rickshaw/1.1.0/rickshaw.min.js',
+            'http://code.shutterstock.com/rickshaw/' ),
+        'sammy' => array(
+            'http://cdnjs.cloudflare.com/ajax/libs/sammy.js/0.7.1/sammy.min.js',
+            'http://sammyjs.org/' ),
+        'script' => array(
+            'http://cdnjs.cloudflare.com/ajax/libs/script.js/1.3/script.min.js',
+            'http://www.dustindiaz.com/scriptjs/' ),
+        'scriptaculous' => array(
+            'http://cdnjs.cloudflare.com/ajax/libs/scriptaculous/1.8.3/scriptaculous.js',
+            'http://script.aculo.us/' ),
+        'selectivizr' => array(
+            'http://cdnjs.cloudflare.com/ajax/libs/selectivizr/1.0.2/selectivizr-min.js',
+            'http://selectivizr.com/' ),
+        'shred' => array(
+            'http://cdnjs.cloudflare.com/ajax/libs/shred/0.7.12/shred.bundle.min.js',
+            'https://github.com/spire-io/shred' ),
+        'simplecartjs' => array(
+            'http://cdnjs.cloudflare.com/ajax/libs/simplecartjs/3.0.5/simplecart.min.js',
+            'http://simplecartjs.org' ),
+        'sizzle' => array(
+            'http://cdnjs.cloudflare.com/ajax/libs/sizzle/1.4.4/sizzle.min.js',
+            'http://sizzlejs.com/' ),
+        'socket.io' => array(
+            'http://cdnjs.cloudflare.com/ajax/libs/socket.io/0.9.10/socket.io.min.js',
+            'http://socket.io' ),
+        'sockjs-client' => array(
+            'http://cdnjs.cloudflare.com/ajax/libs/sockjs-client/0.3.2/sockjs-min.js',
+            'https://github.com/sockjs/sockjs-client' ),
+        'sopa' => array(
+            'http://cdnjs.cloudflare.com/ajax/libs/sopa/1.0/stopcensorship.js',
+            'https://github.com/dougmartin/Stop-Censorship' ),
+        'spin' => array(
+            'http://cdnjs.cloudflare.com/ajax/libs/spin.js/1.2.4/spin.min.js',
+            'http://fgnass.github.com/spin.js/' ),
+        'spinejs' => array(
+            'http://cdnjs.cloudflare.com/ajax/libs/spinejs/0.0.4/spine.min.js',
+            'http://maccman.github.com/spine/' ),
+        'stapes' => array(
+            'http://cdnjs.cloudflare.com/ajax/libs/stapes/0.5.1/stapes.min.js',
+            'http://hay.github.com/stapes' ),
+        'stats' => array(
+            'http://cdnjs.cloudflare.com/ajax/libs/stats.js/r11/Stats.js',
+            'https://github.com/mrdoob/stats.js/' ),
+        'store' => array(
+            'http://cdnjs.cloudflare.com/ajax/libs/store.js/1.1.1/store.min.js',
+            'https://github.com/marcuswestin/store.js' ),
+        'string_score' => array(
+            'http://cdnjs.cloudflare.com/ajax/libs/string_score/0.1.10/string_score.min.js',
+            'https://github.com/joshaven/string_score' ),
+        'sugar' => array(
+            'http://cdnjs.cloudflare.com/ajax/libs/sugar/1.3/sugar.min.js',
+            'http://sugarjs.com/' ),
+        'swfobject' => array(
+            'http://cdnjs.cloudflare.com/ajax/libs/swfobject/2.2/swfobject.js',
+            'http://code.google.com/p/swfobject/' ),
+        'sylvester' => array(
+            'http://cdnjs.cloudflare.com/ajax/libs/sylvester/0.1.3/sylvester.js',
+            'http://sylvester.jcoglan.com/' ),
+        'SyntaxHighlighter' => array(
+            'http://cdnjs.cloudflare.com/ajax/libs/SyntaxHighlighter/3.0.83/scripts/shCore.js',
+            'http://alexgorbatchev.com/SyntaxHighlighter' ),
+        'three' => array(
+            'http://cdnjs.cloudflare.com/ajax/libs/three.js/r50/three.min.js',
+            'http://mrdoob.github.com/three.js/' ),
+        'tinyscrollbar' => array(
+            'http://cdnjs.cloudflare.com/ajax/libs/tinyscrollbar/1.66/jquery.tinyscrollbar.min.js',
+            'http://baijs.nl/tinyscrollbar/' ),
+        'twitter-bootstrap' => array(
+            'http://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/2.1.1/bootstrap.min.js',
+            'http://twitter.github.com/bootstrap/',
+            'css' => array(
+                'http://twitter.github.com/bootstrap/assets/css/bootstrap.css',
+                'http://twitter.github.com/bootstrap/assets/css/bootstrap-responsive.css' )),
+        'twitterlib' => array(
+            'http://cdnjs.cloudflare.com/ajax/libs/twitterlib.js/1.0.8/twitterlib.min.js',
+            'https://github.com/remy/twitterlib/' ),
+        'underscore' => array(
+            'http://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.3.3/underscore-min.js',
+            'http://documentcloud.github.com/underscore/' ),
+        'underscore.string' => array(
+            'http://cdnjs.cloudflare.com/ajax/libs/underscore.string/2.0.0/underscore.string.min.js',
+            'http://epeli.github.com/underscore.string/' ),
+        'use' => array(
+            'http://cdnjs.cloudflare.com/ajax/libs/use.js/0.2.0/use.js',
+            'https://github.com/tbranyen/use.js' ),
+        'visibility' => array(
+            'http://cdnjs.cloudflare.com/ajax/libs/visibility.js/0.5/visibility.min.js',
+            'https://github.com/ai/visibility.js' ),
+        'waypoints' => array(
+            'http://cdnjs.cloudflare.com/ajax/libs/waypoints/1.1.6/waypoints.min.js',
+            'http://imakewebthings.github.com/jquery-waypoints' ),
+        'webfont' => array(
+            'http://cdnjs.cloudflare.com/ajax/libs/webfont/1.0.19/webfont.js',
+            'http://code.google.com/apis/webfonts/docs/webfont_loader.html' ),
+        'xregexp' => array(
+            'http://cdnjs.cloudflare.com/ajax/libs/xregexp/2.0.0/xregexp-min.js',
+            'http://xregexp.com/' ),
+        'xuijs' => array(
+            'http://cdnjs.cloudflare.com/ajax/libs/xuijs/2.3.2/xui.min.js',
+            'http://xuijs.com' ),
+        'yepnope' => array(
+            'http://cdnjs.cloudflare.com/ajax/libs/yepnope/1.5.4/yepnope.min.js',
+            'http://yepnopejs.com/' ),
+        'yui' => array(
+            'http://cdnjs.cloudflare.com/ajax/libs/yui/3.3.0/yui-min.js',
+            'http://developer.yahoo.com/yui/' ),
+        'zepto' => array(
+            'http://cdnjs.cloudflare.com/ajax/libs/zepto/1.0rc1/zepto.min.js',
+            'http://zeptojs.com' ),
+        'zxcvbn' => array(
+            'http://cdnjs.cloudflare.com/ajax/libs/zxcvbn/1.0/zxcvbn-async.js',
+            'http://tech.dropbox.com/?p=165' ),
+    );
 
     /**
      * Time Savers
@@ -47,6 +511,7 @@ class Generate_Task
     public function a($args)   { return $this->assets($args); }
     public function t($args)   { return $this->test($args); }
     public function r($args)   { return $this->resource($args); }
+    public function f($args)   { return $this->fetch($args); }
 
 
     /**
@@ -458,6 +923,43 @@ EOT;
         $this->model($resource_name);
     }
 
+    /**
+     * Fetch remote libraries
+     *
+     * @param $args array  
+     * @return void
+     */
+    public function fetch($args)
+    {
+        if ( !isset( $args[0] ) ) {
+            return;
+        }
+        if ( $args[0] === 'list' ) {
+            $max = max(array_map('strlen',array_keys(self::$libraries)));
+            foreach( self::$libraries as $lib => $info ) {
+                echo str_pad($lib, $max+2).' - '.$info[1]."\n";
+            }
+            return;
+        }
+        if ( array_key_exists($args[0], self::$libraries) ) {
+            echo 'Installing: '.$args[0]."\n";
+            if ( ( self::$content = @file_get_contents(self::$libraries[$args[0]][0]) ) ) {
+                if ( $this->write_to_file(path('public').self::$js_vendors_dir.basename(self::$libraries[$args[0]][0])) ) {
+                    if ( isset(self::$libraries[$args[0]]['css']) && count( self::$libraries[$args[0]]['css'] ) > 0 
+                    && ( !isset( $args[1] ) || $args[1] !== 'nocss' ) ) {
+                        foreach(self::$libraries[$args[0]]['css'] as $file) {
+                            if ( ( self::$content = @file_get_contents($file) ) ) {
+                                $this->write_to_file(path('public').self::$css_vendors_dir.basename($file));
+                            }
+                        }
+                    }
+                    echo "Installation complete.\n";
+                }
+            }
+        }
+        return;
+    }
+
 
     /**
      * Figure out what the name of the table is.
@@ -513,9 +1015,11 @@ EOT;
 
         if ( File::put($file_path, self::$content) !== false ) {
             echo $success;
+            return true;
         } else {
             echo "Whoops - something...erghh...went wrong!\n";
         }
+        return false;
     }
 
 
